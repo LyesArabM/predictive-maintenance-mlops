@@ -1,0 +1,30 @@
+schema: '2.0'
+stages:
+  split:
+    cmd: python -m predictive_maintenance_mlops.split
+    deps:
+    - path: data/raw/ai4i2020.csv
+      hash: md5
+      md5: f0adaa9c5e25366c6df1cc2684479871
+      size: 522048
+    - path: predictive_maintenance_mlops/split.py
+      hash: md5
+      md5: fcbbac750b8ebe2383a85a6d7c261dce
+      size: 936
+    params:
+      params.yaml:
+        split:
+          seed: 42
+          test_size: 0.2
+          raw_path: data/raw/ai4i2020.csv
+          train_path: data/processed/train.csv
+          test_path: data/processed/test.csv
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 01bf9a19a325ea440f6666bab5b21068
+      size: 104873
+    - path: data/processed/train.csv
+      hash: md5
+      md5: d628d9fe8aca6d2174720e362d10aae9
+      size: 419194

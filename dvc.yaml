@@ -1,0 +1,11 @@
+stages:
+  split:
+    cmd: python -m predictive_maintenance_mlops.split
+    deps:
+      - predictive_maintenance_mlops/split.py
+      - data/raw/ai4i2020.csv
+    params:
+      - split
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
