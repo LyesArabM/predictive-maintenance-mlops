@@ -6,26 +6,30 @@ from sklearn.model_selection import train_test_split
 
 
 def main() -> None:
-    p = yaml.safe_load(Path("params.yaml").read_text())["split"]
+    params = yaml.safe_load(open("params.yaml"))["split"]
 
-    df = pd.read_csv(p["raw_path"])
+    df = pd.read_csv(params["raw_path"])
 
-    # Stratification sur la panne and le type de produit 
-    strata = df["Machine failure"].astype(str) + "_" + df["Type"].astype(str)
+    # Stratify on failure AND product type 
+    strat = df["Machine failure"].astype(str) + "_" + df["Type"]
 
     train, test = train_test_split(
         df,
-        test_size=p["test_size"],
-        random_state=p["seed"],
-        stratify=strata,
+        test_size=params["test_size"],
+        random_state=params["seed"],
+        stratify=strat,
     )
 
-    Path(p["train_path"]).parent.mkdir(parents=True, exist_ok=True)
-    train.to_csv(p["train_path"], index=False)
-    test.to_csv(p["test_path"], index=False)
+    train_path = Path(params["train_path"])
+    test_path = Path(params["test_path"])
+    train_path.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"train: {len(train)} lignes, taux de panne {train['Machine failure'].mean():.4f}")
-    print(f"test : {len(test)} lignes, taux de panne {test['Machine failure'].mean():.4f}")
+    # All columns are kept; the features are chosen in train.py
+    train.to_csv(train_path, index=False)
+    test.to_csv(test_path, index=False)
+
+    print(f"train: {len(train)} rows, failure rate {train['Machine failure'].mean():.4f}")
+    print(f"test:  {len(test)} rows, failure rate {test['Machine failure'].mean():.4f}")
 
 
 if __name__ == "__main__":
