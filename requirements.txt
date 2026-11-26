@@ -14,3 +14,12 @@ scikit-learn
 tqdm
 typer
 -e .
+dagshub==0.7.3
+dvc==3.67.1
+joblib==1.6.0
+mlflow==3.18.0
+pandas==3.1.1
+PyYAML==6.0.4
+scikit-learn==1.9.1
+skops==0.16.0
+xgboost==3.4.1

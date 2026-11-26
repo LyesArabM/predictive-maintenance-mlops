@@ -1,0 +1,26 @@
+stages:
+  split:
+    cmd: python predictive_maintenance_mlops/split.py
+    deps:
+      - predictive_maintenance_mlops/split.py
+      - ${split.raw_path}
+    params:
+      - split
+    outs:
+      - ${split.train_path}
+      - ${split.test_path}
+
+  train:
+    cmd: python -m predictive_maintenance_mlops.modeling.train
+    deps:
+      - predictive_maintenance_mlops/modeling/train.py
+      - predictive_maintenance_mlops/features.py
+      - ${split.train_path}
+    params:
+      - train
+      - xgboost
+    outs:
+      - ${train.model_path}
+    metrics:
+      - ${train.metrics_path}:
+          cache: false
