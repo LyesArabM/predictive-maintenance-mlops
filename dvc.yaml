@@ -11,12 +11,14 @@ stages:
       - ${split.test_path}
 
   train:
-    cmd: python predictive_maintenance_mlops/modeling/train.py
+    cmd: python -m predictive_maintenance_mlops.modeling.train
     deps:
       - predictive_maintenance_mlops/modeling/train.py
+      - predictive_maintenance_mlops/features.py
       - ${split.train_path}
     params:
       - train
+      - xgboost
     outs:
       - ${train.model_path}
     metrics:

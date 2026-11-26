@@ -29,16 +29,20 @@ stages:
       md5: d628d9fe8aca6d2174720e362d10aae9
       size: 419194
   train:
-    cmd: python predictive_maintenance_mlops/modeling/train.py
+    cmd: python -m predictive_maintenance_mlops.modeling.train
     deps:
     - path: data/processed/train.csv
       hash: md5
       md5: d628d9fe8aca6d2174720e362d10aae9
       size: 419194
+    - path: predictive_maintenance_mlops/features.py
+      hash: md5
+      md5: 9c9a3420e28d9721a17847691edeab6f
+      size: 918
     - path: predictive_maintenance_mlops/modeling/train.py
       hash: md5
-      md5: 1f75b5d1b668ce6c4edbfccb62e7c73f
-      size: 2671
+      md5: b71b345aad789cc8733453dbcf3eeeaf
+      size: 6295
     params:
       params.yaml:
         train:
@@ -47,12 +51,31 @@ stages:
           n_repeats: 3
           model_path: models/model.joblib
           metrics_path: reports/metrics.json
+          experiments:
+          - name: logreg_raw
+            model: logreg
+            derived: false
+          - name: logreg_derived
+            model: logreg
+            derived: true
+          - name: xgboost_raw
+            model: xgboost
+            derived: false
+          - name: xgboost_derived
+            model: xgboost
+            derived: true
+        xgboost:
+          n_estimators: 300
+          max_depth: 4
+          learning_rate: 0.05
+          subsample: 0.8
+          colsample_bytree: 0.8
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: e1c620de09ee013520d43998070ab148
-      size: 3537
+      md5: fa30acdf6f75521821b6b2f6dd7401c1
+      size: 462172
     - path: reports/metrics.json
       hash: md5
-      md5: 826019dc422eab1aceb5cd44a8e6329e
-      size: 350
+      md5: 804ca1c0cc9a47ad3360374cb91dd501
+      size: 1815

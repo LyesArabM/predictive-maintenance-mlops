@@ -1,29 +1,30 @@
-from pathlib import Path
+import numpy as np
+import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
 
-from loguru import logger
-from tqdm import tqdm
-import typer
+AIR = "Air temperature [K]"
+PROC = "Process temperature [K]"
+RPM = "Rotational speed [rpm]"
+TORQUE = "Torque [Nm]"
+WEAR = "Tool wear [min]"
 
-from predictive_maintenance_mlops.config import PROCESSED_DATA_DIR
-
-app = typer.Typer()
-
-
-@app.command()
-def main(
-    # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    input_path: Path = PROCESSED_DATA_DIR / "dataset.csv",
-    output_path: Path = PROCESSED_DATA_DIR / "features.csv",
-    # -----------------------------------------
-):
-    # ---- REPLACE THIS WITH YOUR OWN CODE ----
-    logger.info("Generating features from dataset...")
-    for i in tqdm(range(10), total=10):
-        if i == 5:
-            logger.info("Something happened for iteration 5.")
-    logger.success("Features generation complete.")
-    # -----------------------------------------
+DERIVED_NAMES = ["temp_diff", "power", "strain"]
 
 
-if __name__ == "__main__":
-    app()
+class DerivedFeatures(BaseEstimator, TransformerMixin):
+    """Adds the three quantities used by the failure rules.
+
+    temp_diff = process temp - air temp   (heat dissipation rule)
+    power     = torque * angular speed    (power rule, in W)
+    strain    = tool wear * torque        (overstrain rule)
+    """
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        X = X.copy()
+        X["temp_diff"] = X[PROC] - X[AIR]
+        X["power"] = X[TORQUE] * X[RPM] * 2 * np.pi / 60
+        X["strain"] = X[WEAR] * X[TORQUE]
+        return X
